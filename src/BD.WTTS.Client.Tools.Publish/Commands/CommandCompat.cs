@@ -25,11 +25,18 @@ static partial class CommandCompat
     {
         command.SetAction(parseResult =>
         {
-            var values = options.Select(x =>
+            var values = options.Select(opt =>
             {
-                var t = x.GetType().GetGenericArguments()[0];
-                var m = typeof(ParseResult).GetMethod(nameof(ParseResult.GetValue), BindingFlags.Instance | BindingFlags.Public).MakeGenericMethod(t);
-                return m.Invoke(parseResult, [x]);
+                var typeOpt = opt.GetType();
+                var typeArg = typeOpt.GetGenericArguments()[0];
+                var methodsGetValue = typeof(ParseResult).GetMethods(BindingFlags.Instance | BindingFlags.Public).Where(x =>
+                    x.Name == nameof(ParseResult.GetValue)
+                    && x.GetParameters().FirstOrDefault()?.ParameterType.ToString() == typeof(Option<>).ToString())
+                .ToArray();
+                ArgumentNullException.ThrowIfNull(methodsGetValue);
+                var methodGetValue = methodsGetValue.Single().MakeGenericMethod(typeArg);
+                var arg = methodGetValue.Invoke(parseResult, [opt]);
+                return arg;
             }).ToArray();
             var result = @delegate.DynamicInvoke(values);
             if (result is int code)
