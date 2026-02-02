@@ -9,11 +9,11 @@ interface INSISBuildCommand : ICommand
 
     static Command ICommand.GetCommand()
     {
-        var debug = new Option<bool>("--debug", "Defines the build configuration");
-        var rids = new Option<string[]>("--rids", "RID is short for runtime identifier");
-        var timestamp = new Option<string>("--t", "Release timestamp");
-        var force_sign = new Option<bool>("--force-sign", GetDefForceSign, "Mandatory verification must be digitally signed");
-        var hsm_sign = new Option<bool>("--hsm-sign", "");
+        var debug = CommandCompat.GetOption<bool>("--debug", "Defines the build configuration");
+        var rids = CommandCompat.GetOption<string[]>("--rids", "RID is short for runtime identifier");
+        var timestamp = CommandCompat.GetOption<string>("--t", "Release timestamp");
+        var force_sign = CommandCompat.GetOption<bool>("--force-sign", GetDefForceSign, "Mandatory verification must be digitally signed");
+        var hsm_sign = CommandCompat.GetOption<bool>("--hsm-sign", "");
         var command = new Command(commandName, "NSIS build generate")
         {
            debug, rids, timestamp, force_sign, hsm_sign,
