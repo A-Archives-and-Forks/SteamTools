@@ -1,6 +1,6 @@
 using BD.Common.Repositories.Abstractions;
-using System.Runtime.InteropServices;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
+using Windows.Win32;
 using KeyValuePair = BD.Common.Entities.KeyValuePair;
 
 const string moduleName = AssemblyInfo.Accelerator;
@@ -36,29 +36,8 @@ static bool IsProcessElevated_DEBUG_Only()
     return principal.IsInRole(WindowsBuiltInRole.Administrator);
 }
 #endif
-const int SM_SHUTTINGDOWN = 0x2000;
 
-[DllImport("user32.dll")]
-static extern int GetSystemMetrics(int nIndex);
-
-static bool IsSystemShuttingDown()
-{
-    if (!OperatingSystem.IsWindows())
-    {
-        return false;
-    }
-
-    try
-    {
-        return Environment.HasShutdownStarted || GetSystemMetrics(SM_SHUTTINGDOWN) != 0;
-    }
-    catch
-    {
-        return Environment.HasShutdownStarted;
-    }
-}
-
-if (IsSystemShuttingDown())
+if (OSShuttingDownHelper.IsSystemShuttingDown())
 {
     return 0;
 }
