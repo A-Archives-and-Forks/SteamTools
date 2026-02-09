@@ -1,4 +1,5 @@
 using BD.Common.Repositories.Abstractions;
+using System.Runtime.InteropServices;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using KeyValuePair = BD.Common.Entities.KeyValuePair;
 
@@ -35,6 +36,33 @@ static bool IsProcessElevated_DEBUG_Only()
     return principal.IsInRole(WindowsBuiltInRole.Administrator);
 }
 #endif
+const int SM_SHUTTINGDOWN = 0x2000;
+
+[DllImport("user32.dll")]
+static extern int GetSystemMetrics(int nIndex);
+
+static bool IsSystemShuttingDown()
+{
+    if (!OperatingSystem.IsWindows())
+    {
+        return false;
+    }
+
+    try
+    {
+        return Environment.HasShutdownStarted || GetSystemMetrics(SM_SHUTTINGDOWN) != 0;
+    }
+    catch
+    {
+        return Environment.HasShutdownStarted;
+    }
+}
+
+if (IsSystemShuttingDown())
+{
+    return 0;
+}
+
 try
 {
     var exitCode = await IPCSubProcessService.MainAsync(moduleName, pluginName, ConfigureServices, static ipcProvider =>
