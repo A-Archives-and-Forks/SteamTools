@@ -366,6 +366,13 @@ sign /fd SHA256 /sha1 {pfxFilePath_HSM_CodeSigning} /tr {timestamp_url} /td SHA2
                 default:
                     {
                         pfxFilePath ??= pfxFilePath_BeyondDimension_CodeSigning;
+
+                        if (!File.Exists(pfxFilePath))
+                        {
+                            // 无证书文件则跳过
+                            return;
+                        }
+
                         var pwdTxtPath = $"{pfxFilePath}.txt";
 
                         string? pwdS = null;
