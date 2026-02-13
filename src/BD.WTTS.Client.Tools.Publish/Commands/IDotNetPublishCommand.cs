@@ -1234,12 +1234,16 @@ publish -c {0} -p:OutputType={1} -p:PublishDir=bin\{0}\Publish\win-any -p:Publis
                 arg.IsDebug = isDebug;
 
                 bool isWindows = false;
+                bool isMacOS = false;
                 switch (platform)
                 {
                     case Platform.Windows:
                     case Platform.UWP:
                     case Platform.WinUI:
                         isWindows = true;
+                        break;
+                    case Platform.Apple:
+                        isMacOS = true;
                         break;
                 }
 
@@ -1248,7 +1252,14 @@ publish -c {0} -p:OutputType={1} -p:PublishDir=bin\{0}\Publish\win-any -p:Publis
                 arg.SingleFile = true;
                 arg.ReadyToRun = false;
                 arg.Trimmed = false;
-                arg.SelfContained = false;
+                if (isMacOS)
+                {
+                    arg.SelfContained = true;
+                }
+                else
+                {
+                    arg.SelfContained = false;
+                }
                 if (isWindows)
                 {
                     //arg.Framework = $"net{Environment.Version.Major}.{Environment.Version.Minor}-windows{windowssdkver}";
