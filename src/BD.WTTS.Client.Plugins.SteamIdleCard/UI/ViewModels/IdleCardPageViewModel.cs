@@ -414,7 +414,7 @@ public sealed partial class IdleCardPageViewModel
         HandleBadges:
             Badges.Clear();
             Badges.Add(badges!);
-            await RefreshPrivateGameAppIds(steam_id);
+            //await RefreshPrivateGameAppIds(steam_id);
             TotalCardsRemaining = 0;
             TotalCardsAvgPrice = 0;
 
